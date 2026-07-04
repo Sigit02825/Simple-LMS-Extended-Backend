@@ -1,173 +1,119 @@
-# Simple LMS (Learning Management System)
+# Simple LMS Extended Backend
 
-Project ini adalah backend sederhana untuk sistem LMS menggunakan **Django**, **Django REST Framework**, dan **Docker**.
-
----
+Backend LMS sederhana berbasis Django REST Framework dengan PostgreSQL, JWT, Swagger, Redis, dan role `admin`, `instructor`, `student`.
 
 ## Fitur Utama
 
-* API Course (Kursus)
-* API Lesson (Materi)
-* API Enrollment (Pendaftaran)
-* Authentication menggunakan JWT
-* Dockerized (mudah dijalankan)
+- Autentikasi JWT dengan endpoint login, refresh token, dan logout blacklist
+- Role-based access untuk `admin`, `instructor`, dan `student`
+- Endpoint `course`, `lesson`, `enrollment`, dan `lesson-progress`
+- Rating, review, wishlist, search, filter, dan sorting course
+- Dokumentasi API melalui Swagger dan ReDoc
+- Docker Compose untuk menjalankan aplikasi, PostgreSQL, dan Redis
+- Seed data akun demo dan data course
 
----
+## Stack
 
-## Teknologi
+- Python 3.11
+- Django
+- Django REST Framework
+- Simple JWT
+- PostgreSQL
+- Redis
+- drf-yasg
+- Docker Compose
 
-* Python
-* Django
-* Django REST Framework
-* JWT Authentication
-* Docker & Docker Compose
+## Menjalankan Project
 
----
+### Opsi 1: Docker Compose
 
-## Screenshot
+1. Salin konfigurasi environment:
 
-### 1. Docker & Container Berjalan
-
-![Docker](Screenshot 2026-03-29 205957.png)
-
-### 2. Server Django Berjalan
-
-![Server](Screenshot 2026-03-29 205643.png)
-
-### 3. Project Structure
-
-![Structure](Screenshot 2026-03-29 210102.png)
-
-### 4. Django Login
-
-![JWT](Screenshot 2026-03-29 210131.png)
-
-### 5. Install Django
-
-![Install](Screenshot 2026-03-29 205652.png)
-
----
-
-## Struktur Project
-
-```id="tqcbpg"
-simple-lms/
-│
-├── config/              # Konfigurasi utama Django
-├── courses/             # App LMS (Course, Lesson, Enrollment)
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-├── .env
-├── screenshots/         # Folder gambar
-└── README.md
+```powershell
+Copy-Item .env.example .env
 ```
 
----
+2. Jalankan seluruh service:
 
-## Cara Menjalankan Project
-
-### 1. Clone Repository
-
-```bash id="e6p0u1"
-git clone https://github.com/Sigit02825/simple-lms.git
-cd simple-lms
+```powershell
+docker-compose up --build
 ```
 
----
+3. Akses aplikasi:
+- API root: `http://localhost:8000/api/`
+- Swagger: `http://localhost:8000/swagger/`
+- ReDoc: `http://localhost:8000/redoc/`
+- Django Admin: `http://localhost:8000/admin/`
 
-### 2. Jalankan Docker
+### Opsi 2: Local Development
 
-```bash id="c5f7zv"
-docker compose up --build
+1. Buat virtual environment:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
----
+2. Install dependency:
 
-### 3. Jalankan Migration
-
-```bash id="dnx7ml"
-docker compose exec web python manage.py migrate
+```powershell
+pip install -r requirements.txt
 ```
 
----
+3. Salin environment:
 
-### 4. Buat Superuser
-
-```bash id="g1l0dn"
-docker compose exec web python manage.py createsuperuser
+```powershell
+Copy-Item .env.example .env
 ```
 
----
+4. Jika memakai PostgreSQL lokal atau Docker, sesuaikan isi `.env`.
 
-### 5. Akses Aplikasi
+5. Jalankan migration dan seed:
 
-* Admin Panel:
-  http://localhost:8000/admin/
-
-* API Root:
-  http://localhost:8000/api/
-
----
-
-## Authentication (JWT)
-
-### Login
-
-```http id="lgp3t5"
-POST /api/token/
+```powershell
+python manage.py migrate
+python manage.py seed_data
 ```
 
-Body:
+6. Jalankan server:
 
-```json id="9xxy1k"
-{
-  "username": "admin",
-  "password": "sigitilham"
-}
+```powershell
+python manage.py runserver
 ```
 
-Response:
+## Akun Demo
 
-```json id="9f4dr3"
-{
-  "access": "admin",
-  "refresh": "sigitilham"
-}
+- Admin: `admin` / `admin12345`
+- Instructor: `instructor` / `instructor12345`
+- Student 1: `student1` / `student12345`
+- Student 2: `student2` / `student12345`
+
+## Endpoint Utama
+
+- `POST /api/token/` untuk login JWT
+- `POST /api/token/refresh/` untuk refresh access token
+- `POST /api/logout/` untuk blacklist refresh token
+- `GET /api/users/` untuk data user
+- `GET /api/courses/` untuk daftar course
+- `GET /api/lessons/` untuk daftar lesson yang boleh diakses user
+- `GET /api/enrollments/` untuk daftar enrollment user
+- `GET /api/lesson-progress/` untuk progress lesson
+- `GET /swagger/` untuk dokumentasi interaktif
+
+## Cara Authorize Di Swagger
+
+1. Buka `POST /api/token/`
+2. Masukkan username dan password akun demo
+3. Salin nilai `access`
+4. Klik tombol `Authorize` di Swagger
+5. Isi field dengan format:
+
+```text
+Bearer <access_token>
 ```
 
----
+## Catatan
 
-### Gunakan Token
-
-Tambahkan header:
-
-```id="a6gm3w"
-Authorization: Bearer <access_token>
-```
-
----
-
-## Endpoint API
-
-* `/api/courses/`
-* `/api/lessons/`
-* `/api/enrollments/`
-
----
-
-## Testing API
-
-Gunakan:
-
-* Postman
-* Thunder Client (VS Code)
-
----
-
-## Author
-
-Nama: Sigit Ilham
-Project: Simple LMS - Docker & Django Foundation
-
----
+- `seed_data` aman dijalankan berulang karena data demo dibuat idempotent.
+- Registrasi publik melalui endpoint user otomatis membuat role `student`.
+- Role `admin` dapat melihat semua data, `instructor` hanya data course miliknya, dan `student` hanya data yang menjadi hak aksesnya.

@@ -1,5 +1,10 @@
 Django>=4.2
-psycopg2-binary
-python-dotenv
 djangorestframework
 djangorestframework-simplejwt
+django-filter
+drf-yasg
+Pillow
+redis
+django-redis
+psycopg2-binary
+python-dotenv
