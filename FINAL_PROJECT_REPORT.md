@@ -125,7 +125,7 @@ python manage.py runserver
 
 ## Bukti Pengujian Akhir
 
-Screenshot bukti pengujian disimpan pada folder `images/`. Agar ringkas dan relevan untuk penilaian UAS, hanya bukti utama yang dipertahankan.
+Screenshot bukti pengujian disimpan pada folder `images/`. Folder ini memuat bukti utama dan bukti tambahan agar proses pengujian UAS dapat dilihat lebih lengkap.
 
 | No | Bukti | Hasil | File Screenshot |
 |----|-------|-------|-----------------|
@@ -141,6 +141,24 @@ Screenshot bukti pengujian disimpan pada folder `images/`. Agar ringkas dan rele
 | 10 | ReDoc | Aktif | `images/ReDoc.png` |
 | 11 | Django Admin | Aktif | `images/admindjango.png` |
 | 12 | Flower | Aktif | `images/Flower.png` |
+
+## Lampiran Screenshot Tambahan
+
+Selain bukti utama, tersedia juga screenshot tambahan yang memperlihatkan detail hasil pengujian dan tampilan dokumentasi:
+
+- Login JWT detail: `images/Login_POST_apitoken_detail.png`
+- Create course detail: `images/Create_Course_POST_courses_detail.png`
+- List course detail: `images/List_Course_GET_courses_detail.png`
+- Update course detail 1: `images/Update_Course_PUT_course_{id}_detail.png`
+- Update course detail 2: `images/Update_Course_PUT_course_{id}_detail_2.png`
+- Swagger bagian enrollments, lesson progress, dan lessons: `images/Swagger_Enrollments_LessonProgress_Lessons.png`
+- Swagger bagian token, users, dan wishlist: `images/Swagger_Token_Users_Wishlist.png`
+- Swagger bagian models: `images/Swagger_Models.png`
+- Swagger tampilan tambahan: `images/Swagger_Additional_Section.png`
+- ReDoc schema course: `images/ReDoc_Courses_Schema.png`
+- Flower dashboard detail task: `images/Flower_Tasks_Dashboard.png`
+- Django admin dashboard: `images/Admin_Dashboard.png`
+- Django admin daftar users: `images/Admin_Users_List.png`
 
 ## File Deliverables
 
