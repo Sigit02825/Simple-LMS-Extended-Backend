@@ -1,0 +1,665 @@
+{
+  "info": {
+    "_postman_id": "da3c4fe0-3d4e-45c9-b9d8-0e21562f9001",
+    "name": "Simple LMS Extended Backend API",
+    "description": "Postman collection untuk pengujian endpoint Simple LMS Extended Backend berbasis Django REST Framework dan JWT.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "course_id",
+      "value": "1"
+    },
+    {
+      "key": "lesson_id",
+      "value": "1"
+    },
+    {
+      "key": "enrollment_id",
+      "value": "1"
+    },
+    {
+      "key": "progress_id",
+      "value": "1"
+    },
+    {
+      "key": "rating_id",
+      "value": "1"
+    },
+    {
+      "key": "wishlist_id",
+      "value": "1"
+    },
+    {
+      "key": "user_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Token Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/token/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "token",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/token/refresh/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "token",
+                "refresh",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout Blacklist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/logout/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "logout",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"studentbaru\",\n  \"email\": \"studentbaru@example.com\",\n  \"password\": \"password123\",\n  \"first_name\": \"Student\",\n  \"last_name\": \"Baru\",\n  \"role\": \"student\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "User Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/{{user_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{user_id}}",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "List Courses",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/courses/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter Courses",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/courses/?category=Programming&level=Beginner&status=published&ordering=title&page=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "Programming"
+                },
+                {
+                  "key": "level",
+                  "value": "Beginner"
+                },
+                {
+                  "key": "status",
+                  "value": "published"
+                },
+                {
+                  "key": "ordering",
+                  "value": "title"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Courses",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/courses/?search=python",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "python"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Course Detail",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/courses/{{course_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{course_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Belajar Django REST Framework\",\n  \"description\": \"Course ini membahas pembuatan REST API menggunakan Django REST Framework.\",\n  \"category\": \"Programming\",\n  \"level\": \"Beginner\",\n  \"status\": \"published\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/courses/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Belajar Django REST Framework Updated\",\n  \"description\": \"Versi update dari course Django REST Framework.\",\n  \"category\": \"Programming\",\n  \"level\": \"Intermediate\",\n  \"status\": \"published\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/courses/{{course_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{course_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Course",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/courses/{{course_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{course_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Enroll Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/courses/{{course_id}}/enroll/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{course_id}}",
+                "enroll",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lessons",
+      "item": [
+        {
+          "name": "List Lessons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/lessons/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "lessons",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Lesson",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course\": {{course_id}},\n  \"title\": \"Pengenalan DRF\",\n  \"content\": \"Materi pengenalan serializer, views, dan router.\",\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/lessons/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "lessons",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Complete Lesson",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/lessons/{{lesson_id}}/complete/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "lessons",
+                "{{lesson_id}}",
+                "complete",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enrollment Progress Ratings Wishlist",
+      "item": [
+        {
+          "name": "Create Enrollment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course_id\": {{course_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/enrollments/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Lesson Progress",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lesson_id\": {{lesson_id}},\n  \"completed\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/lesson-progress/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "lesson-progress",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Rating",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course_id\": {{course_id}},\n  \"score\": 5,\n  \"comment\": \"Course sangat membantu dan mudah dipahami.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ratings/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ratings",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Wishlist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course_id\": {{course_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/wishlist/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "wishlist",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

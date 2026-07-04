@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.db.models import Avg, Q
+from django.core.cache import cache
 from rest_framework import viewsets, permissions, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
@@ -15,6 +16,12 @@ from .permissions import (
     IsEnrolledOrInstructorOrAdmin,
     IsEnrollmentOwnerInstructorOrAdmin,
     IsProgressOwnerInstructorOrAdmin,
+)
+from .services import (
+    PUBLIC_COURSE_CACHE_TIMEOUT,
+    public_course_list_cache_key,
+    public_course_detail_cache_key,
+    invalidate_public_course_cache,
 )
 from users.permissions import IsAdminOrInstructor, IsStudent
 
@@ -51,8 +58,46 @@ class CourseViewSet(viewsets.ModelViewSet):
             return queryset.filter(instructor=user)
         return queryset.filter(status='published')
 
+    def list(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return super().list(request, *args, **kwargs)
+
+        cache_key = public_course_list_cache_key(request.query_params)
+        cached_payload = cache.get(cache_key)
+        if cached_payload is not None:
+            return Response(cached_payload)
+
+        response = super().list(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.set(cache_key, response.data, timeout=PUBLIC_COURSE_CACHE_TIMEOUT)
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return super().retrieve(request, *args, **kwargs)
+
+        cache_key = public_course_detail_cache_key(kwargs['pk'])
+        cached_payload = cache.get(cache_key)
+        if cached_payload is not None:
+            return Response(cached_payload)
+
+        response = super().retrieve(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.set(cache_key, response.data, timeout=PUBLIC_COURSE_CACHE_TIMEOUT)
+        return response
+
     def perform_create(self, serializer):
         serializer.save(instructor=self.request.user)
+        invalidate_public_course_cache()
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        invalidate_public_course_cache(course.id)
+
+    def perform_destroy(self, instance):
+        course_id = instance.id
+        instance.delete()
+        invalidate_public_course_cache(course_id)
 
     @action(detail=True, methods=['post'], permission_classes=[IsStudent()])
     def enroll(self, request, pk=None):
@@ -190,7 +235,17 @@ class RatingViewSet(viewsets.ModelViewSet):
         return Rating.objects.filter(user=user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        rating = serializer.save(user=self.request.user)
+        invalidate_public_course_cache(rating.course_id)
+
+    def perform_update(self, serializer):
+        rating = serializer.save()
+        invalidate_public_course_cache(rating.course_id)
+
+    def perform_destroy(self, instance):
+        course_id = instance.course_id
+        instance.delete()
+        invalidate_public_course_cache(course_id)
 
 
 class WishlistViewSet(viewsets.ModelViewSet):

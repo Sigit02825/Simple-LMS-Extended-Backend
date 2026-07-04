@@ -199,3 +199,20 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/2')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/3')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+    'warm-public-course-cache-every-10-minutes': {
+        'task': 'courses.tasks.warm_public_course_cache',
+        'schedule': timedelta(minutes=10),
+    },
+    'generate-course-report-every-hour': {
+        'task': 'courses.tasks.generate_course_report_snapshot',
+        'schedule': timedelta(hours=1),
+    },
+}

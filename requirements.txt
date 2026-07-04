@@ -8,3 +8,5 @@ redis
 django-redis
 psycopg2-binary
 python-dotenv
+celery
+flower

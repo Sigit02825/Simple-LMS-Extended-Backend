@@ -1,18 +1,19 @@
 # Simple LMS Extended Backend
 
-Backend LMS sederhana berbasis Django REST Framework dengan PostgreSQL, JWT, Swagger, Redis, dan role `admin`, `instructor`, `student`.
+Backend Learning Management System (LMS) berbasis Django REST Framework dengan autentikasi JWT, PostgreSQL, Redis, dokumentasi API, dan role `admin`, `instructor`, `student`.
 
-## Fitur Utama
+## Ringkasan Fitur
 
-- Autentikasi JWT dengan endpoint login, refresh token, dan logout blacklist
+- Login JWT, refresh token, dan logout blacklist
 - Role-based access untuk `admin`, `instructor`, dan `student`
-- Endpoint `course`, `lesson`, `enrollment`, dan `lesson-progress`
-- Rating, review, wishlist, search, filter, dan sorting course
+- Manajemen `course`, `lesson`, `enrollment`, dan `lesson progress`
+- Rating, review, dan wishlist course
+- Search, filter, sorting, dan pagination course
 - Dokumentasi API melalui Swagger dan ReDoc
-- Docker Compose untuk menjalankan aplikasi, PostgreSQL, dan Redis
-- Seed data akun demo dan data course
+- Docker Compose untuk aplikasi, PostgreSQL, Redis, Celery, Beat, dan Flower
+- Seed data untuk akun demo dan data course
 
-## Stack
+## Stack Teknologi
 
 - Python 3.11
 - Django
@@ -22,98 +23,95 @@ Backend LMS sederhana berbasis Django REST Framework dengan PostgreSQL, JWT, Swa
 - Redis
 - drf-yasg
 - Docker Compose
+- Celery, Celery Beat, dan Flower
 
 ## Menjalankan Project
 
 ### Opsi 1: Docker Compose
 
-1. Salin konfigurasi environment:
-
 ```powershell
-Copy-Item .env.example .env
+docker compose --env-file .env.example up -d --build
 ```
 
-2. Jalankan seluruh service:
+Setelah container aktif, buka:
 
-```powershell
-docker-compose up --build
-```
-
-3. Akses aplikasi:
-- API root: `http://localhost:8000/api/`
+- API Root: `http://localhost:8000/api/`
 - Swagger: `http://localhost:8000/swagger/`
 - ReDoc: `http://localhost:8000/redoc/`
 - Django Admin: `http://localhost:8000/admin/`
+- Flower: `http://localhost:5555/`
 
 ### Opsi 2: Local Development
-
-1. Buat virtual environment:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
-
-2. Install dependency:
-
-```powershell
 pip install -r requirements.txt
-```
-
-3. Salin environment:
-
-```powershell
 Copy-Item .env.example .env
-```
-
-4. Jika memakai PostgreSQL lokal atau Docker, sesuaikan isi `.env`.
-
-5. Jalankan migration dan seed:
-
-```powershell
 python manage.py migrate
 python manage.py seed_data
-```
-
-6. Jalankan server:
-
-```powershell
 python manage.py runserver
 ```
 
 ## Akun Demo
 
-- Admin: `admin` / `admin12345`
-- Instructor: `instructor` / `instructor12345`
-- Student 1: `student1` / `student12345`
-- Student 2: `student2` / `student12345`
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `admin12345` |
+| Instructor | `instructor` | `instructor12345` |
+| Student 1 | `student1` | `student12345` |
+| Student 2 | `student2` | `student12345` |
 
 ## Endpoint Utama
 
 - `POST /api/token/` untuk login JWT
 - `POST /api/token/refresh/` untuk refresh access token
-- `POST /api/logout/` untuk blacklist refresh token
+- `POST /api/logout/` untuk logout dan blacklist refresh token
 - `GET /api/users/` untuk data user
 - `GET /api/courses/` untuk daftar course
-- `GET /api/lessons/` untuk daftar lesson yang boleh diakses user
+- `GET /api/lessons/` untuk daftar lesson yang dapat diakses
 - `GET /api/enrollments/` untuk daftar enrollment user
 - `GET /api/lesson-progress/` untuk progress lesson
-- `GET /swagger/` untuk dokumentasi interaktif
+
+## Fitur Tambahan UAS
+
+| Fitur | Keterangan |
+|-------|------------|
+| Rating, Review, Wishlist | Menambah interaksi user pada course |
+| Search, Filter, Sorting | Mempermudah pencarian dan penelusuran course |
+| JWT Refresh Rotation dan Blacklist | Menambah keamanan autentikasi |
+| Redis Caching | Mempercepat response endpoint publik course |
+| Swagger/OpenAPI | Mempermudah dokumentasi dan presentasi API |
 
 ## Cara Authorize Di Swagger
 
-1. Buka `POST /api/token/`
-2. Masukkan username dan password akun demo
-3. Salin nilai `access`
-4. Klik tombol `Authorize` di Swagger
-5. Isi field dengan format:
+1. Buka `POST /api/token/` di Swagger.
+2. Login menggunakan salah satu akun demo.
+3. Salin nilai `access` dari response.
+4. Klik tombol `Authorize`.
+5. Masukkan token dengan format berikut:
 
 ```text
 Bearer <access_token>
 ```
 
-## Catatan
+## Bukti Pengujian
 
-- `seed_data` aman dijalankan berulang karena data demo dibuat idempotent.
-- Registrasi publik melalui endpoint user otomatis membuat role `student`.
-- Role `admin` dapat melihat semua data, `instructor` hanya data course miliknya, dan `student` hanya data yang menjadi hak aksesnya.
+- Screenshot pengujian akhir disimpan pada folder `images/`.
+- Ringkasan bukti dan urutannya dijelaskan pada `FINAL_PROJECT_REPORT.md`.
+
+## File Pendukung
+
+- `FINAL_PROJECT_REPORT.md` berisi ringkasan hasil akhir project dan bukti pengujian
+- `LMS_Postman_Collection.json` berisi collection Postman untuk pengujian API
+- `cache_report.md` berisi ringkasan implementasi Redis caching
+- `query_optimization_demo.py` berisi contoh optimasi query
+- `test_cache.py` berisi contoh pengujian cache
+
+## Catatan Penting
+
+- `seed_data` aman dijalankan berulang karena dibuat idempotent.
+- Registrasi publik otomatis menghasilkan role `student`.
+- Field `instructor` pada pembuatan course diisi otomatis dari `request.user`.
+- `PUT` memerlukan seluruh field utama, sedangkan `PATCH` hanya field yang ingin diubah.
+- Flower merupakan nilai tambah untuk monitoring task queue dan tidak mengubah endpoint utama API.
