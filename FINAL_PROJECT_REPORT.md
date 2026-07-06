@@ -123,6 +123,67 @@ python manage.py runserver
 - Token Refresh: `http://localhost:8000/api/token/refresh/`
 - Flower: `http://localhost:5555/`
 
+## Dokumentasi API dan Cara Membacanya
+
+Project menyediakan dokumentasi API dalam dua tampilan:
+
+1. **Swagger (`/swagger/`)**
+   - Tujuan: dokumentasi interaktif untuk mencoba endpoint dengan tombol **Try it out**.
+   - Cocok untuk pengujian langsung saat presentasi karena bisa mengirim request dan melihat response.
+   - Pada bagian bawah halaman, Swagger juga menampilkan **Models** (schema) yang menjelaskan struktur data.
+
+2. **ReDoc (`/redoc/`)**
+   - Tujuan: dokumentasi yang lebih nyaman dibaca untuk melihat deskripsi endpoint, request body, dan response.
+   - Cocok untuk menjelaskan struktur API secara keseluruhan kepada dosen/penguji.
+
+### Cara Authorize di Swagger (JWT)
+
+1. Buka `POST /api/token/` di Swagger.
+2. Klik **Try it out**, isi akun demo, lalu **Execute**.
+3. Salin nilai `access` dari response.
+4. Klik tombol **Authorize** di bagian atas Swagger.
+5. Masukkan:
+
+```text
+Bearer <access_token>
+```
+
+Setelah berhasil authorize, endpoint yang butuh login (misalnya create/update/delete course) dapat diakses.
+
+## Panduan Pengujian Singkat (Urutan Presentasi)
+
+Urutan ini sesuai bukti screenshot pada folder `images/` dan mudah diikuti saat demo:
+
+1. **Login JWT**
+   - Endpoint: `POST /api/token/`
+   - Target: mendapat `access` dan `refresh`.
+2. **Create Course**
+   - Endpoint: `POST /courses/`
+   - Target: `201 Created` dan course baru terbentuk.
+3. **List Course**
+   - Endpoint: `GET /courses/`
+   - Target: `200 OK`, response berisi pagination `count`, `next`, `previous`, `results`.
+4. **Filter**
+   - Endpoint: `GET /courses/?category=Programming`
+   - Target: `200 OK`, hasil hanya course dengan kategori terkait.
+5. **Search**
+   - Endpoint: `GET /courses/?search=python`
+   - Target: `200 OK`, hasil mengandung kata `python` pada `title/description`.
+6. **Sorting**
+   - Endpoint: `GET /courses/?ordering=title`
+   - Target: `200 OK`, data terurut berdasarkan judul.
+7. **Update Course**
+   - Endpoint: `PUT /courses/{id}/`
+   - Target: `200 OK`, data course berubah sesuai payload.
+8. **Delete Course**
+   - Endpoint: `DELETE /courses/{id}/`
+   - Target: `204 No Content`, course terhapus.
+9. **Validasi UI Pendukung**
+   - Swagger aktif: `/swagger/`
+   - ReDoc aktif: `/redoc/`
+   - Admin aktif: `/admin/`
+   - Flower aktif: `/` pada port `5555`
+
 ## Bukti Pengujian Akhir
 
 Screenshot bukti pengujian disimpan pada folder `images/`. Folder ini memuat bukti utama dan bukti tambahan agar proses pengujian UAS dapat dilihat lebih lengkap.
@@ -144,21 +205,33 @@ Screenshot bukti pengujian disimpan pada folder `images/`. Folder ini memuat buk
 
 ## Lampiran Screenshot Tambahan
 
-Selain bukti utama, tersedia juga screenshot tambahan yang memperlihatkan detail hasil pengujian dan tampilan dokumentasi:
+Selain bukti utama, tersedia juga screenshot tambahan yang memperlihatkan detail hasil pengujian dan tampilan dokumentasi.
 
-- Login JWT detail: `images/Login_POST_apitoken_detail.png`
-- Create course detail: `images/Create_Course_POST_courses_detail.png`
-- List course detail: `images/List_Course_GET_courses_detail.png`
-- Update course detail 1: `images/Update_Course_PUT_course_{id}_detail.png`
-- Update course detail 2: `images/Update_Course_PUT_course_{id}_detail_2.png`
-- Swagger bagian enrollments, lesson progress, dan lessons: `images/Swagger_Enrollments_LessonProgress_Lessons.png`
-- Swagger bagian token, users, dan wishlist: `images/Swagger_Token_Users_Wishlist.png`
-- Swagger bagian models: `images/Swagger_Models.png`
-- Swagger tampilan tambahan: `images/Swagger_Additional_Section.png`
-- ReDoc schema course: `images/ReDoc_Courses_Schema.png`
-- Flower dashboard detail task: `images/Flower_Tasks_Dashboard.png`
-- Django admin dashboard: `images/Admin_Dashboard.png`
-- Django admin daftar users: `images/Admin_Users_List.png`
+| File Screenshot | Kategori | Penjelasan Singkat |
+|---|---|---|
+| `images/Login_POST_apitoken_detail.png` | JWT | Detail response `POST /api/token/` berisi token `access` dan `refresh`. |
+| `images/Create_Course_POST_courses_detail.png` | Course | Detail response `POST /courses/` (contoh hasil `201 Created`). |
+| `images/List_Course_GET_courses_detail.png` | Course | Detail response `GET /courses/` (contoh hasil `200 OK` dengan pagination). |
+| `images/Update_Course_PUT_course_{id}_detail.png` | Course | Detail response update `PUT /courses/{id}/` (contoh hasil `200 OK`). |
+| `images/Update_Course_PUT_course_{id}_detail_2.png` | Course | Detail lanjutan update `PUT /courses/{id}/` (bagian response yang menampilkan field lengkap). |
+| `images/Swagger_Enrollments_LessonProgress_Lessons.png` | Swagger | Tampilan daftar endpoint pada Swagger untuk `enrollments`, `lesson-progress`, dan `lessons`. |
+| `images/Swagger_Token_Users_Wishlist.png` | Swagger | Tampilan daftar endpoint pada Swagger untuk `token`, `users`, dan `wishlist`. |
+| `images/Swagger_Models.png` | Swagger | Tampilan bagian `Models` pada Swagger (schema model seperti User, Course, Enrollment, LessonProgress, Lesson, Rating, Wishlist). |
+| `images/Swagger_Additional_Section.png` | Swagger | Tampilan tambahan Swagger untuk memperlihatkan bagian endpoint lain/scroll lanjutan. |
+| `images/ReDoc_Courses_Schema.png` | ReDoc | Contoh tampilan schema dan request/response pada ReDoc untuk endpoint course. |
+| `images/Flower_Tasks_Dashboard.png` | Flower | Halaman monitoring task (contoh task `warm_public_course_cache` dan `generate_course_report_snapshot`). |
+| `images/Admin_Dashboard.png` | Admin | Tampilan dashboard Django Admin setelah login (daftar model yang terdaftar). |
+| `images/Admin_Users_List.png` | Admin | Tampilan daftar user di Django Admin (membuktikan akun demo dan role). |
+
+## Referensi Folder Images
+
+Seluruh file bukti pengujian dan dokumentasi disimpan pada folder `images/` di root repository. Folder ini berisi bukti utama dan detail tambahan sesuai urutan pengujian UAS.
+
+## Catatan Penting Saat Demo
+
+- Token `access` memiliki masa berlaku. Jika muncul `401 Unauthorized` dengan pesan token expired, lakukan login ulang di `POST /api/token/` dan authorize ulang.
+- `POST /courses/` tidak membutuhkan field `instructor` pada input karena diisi otomatis dari user login.
+- `PUT` memerlukan seluruh field utama, sedangkan `PATCH` hanya field yang ingin diubah.
 
 ## File Deliverables
 
